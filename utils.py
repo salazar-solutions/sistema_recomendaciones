@@ -8,6 +8,14 @@ Módulo central que provee funciones reutilizables para:
 - Cálculo de rating ponderado (fórmula IMDB)
 - Creación de "sopa de metadatos" para content-based filtering
 - Búsqueda fuzzy de títulos
+
+Decisiones de diseño:
+- Las columnas con listas (géneros, keywords) vienen como texto con comillas simples, que NO es JSON válido
+  (`json.loads` falla). Se usa `ast.literal_eval`, que sí las interpreta y, a diferencia de `eval`, no ejecuta código.
+- Se eliminan películas duplicadas por `id`: los CSV traen ids repetidos y una película no debe aparecer dos veces
+  en las recomendaciones.
+- La búsqueda difusa usa `difflib` (biblioteca estándar) para no añadir dependencias extra.
+- Las funciones compartidas viven aquí para que los notebooks 01-03 usen exactamente la misma limpieza y fórmula.
 """
 
 import os
@@ -194,6 +202,12 @@ def create_soup(row):
     Los espacios dentro de nombres multi-palabra se eliminan para que
     'Science Fiction' → 'sciencefiction' sea tratado como un solo token.
 
+    Decisiones de diseño:
+    - Keywords y géneros se repiten dos veces para darles más peso que a la sinopsis: son metadatos
+      más específicos y fiables que el texto libre.
+    - Aquí no entran actores ni director (`credits.csv` no se carga en este módulo); esa versión
+      mejorada está en 04_recomendador_mejorado.ipynb.
+
     Parámetros:
         row: Fila del DataFrame
 
@@ -223,6 +237,9 @@ def fuzzy_match_title(query, titles_series, n=5, cutoff=0.4):
 
     Útil cuando el usuario escribe 'Toystory' en vez de 'Toy Story',
     o 'Dark Nite' en vez de 'The Dark Knight'.
+
+    Decisión: cutoff=0.4 es permisivo a propósito: es preferible sugerir títulos parecidos que no
+    encontrar nada ante un error de escritura.
 
     Parámetros:
         query (str): Título buscado por el usuario

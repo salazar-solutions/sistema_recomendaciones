@@ -1,0 +1,15 @@
+# Entornos virtuales
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Dataset demasiado grande para GitHub (181 MB > 100 MB); descargarlo aparte, ver README
+data/credits.csv

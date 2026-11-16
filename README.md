@@ -1,89 +1,63 @@
 # 🎬 Sistema de Recomendación de Películas
 
-Sistema de recomendación progresivo que cubre fundamentos, filtrado basado en contenido y técnicas de NLP, construido con un dataset de ~45,000 películas.
+Sistema de recomendación progresivo (tema *6. Sistemas recomendadores*): recomendador simple por popularidad, recomendadores basados en contenido, técnicas de NLP y un recomendador mejorado con actores, director, palabras clave y géneros. Usa ~45,000 películas del dataset *The Movies Dataset*.
 
-## 📋 Contenido del Proyecto
+## 📋 Contenido
 
-| Módulo | Archivo | Descripción |
-|--------|---------|-------------|
-| Utilidades | `utils.py` | Carga de datos, limpieza, funciones compartidas |
-| Fundamentos | `01_fundamentos.py` | Teoría de recsys, EDA, recomendador por popularidad (WR/IMDB) |
-| Content-Based | `02_content_based.py` | TF-IDF, metadata soup, similitud coseno, filtros avanzados |
-| NLP | `03_nlp_tecnicas.py` | Tokenización, stemming, lematización, BoW vs TF-IDF, wordclouds |
+| Archivo | Qué contiene |
+|---------|--------------|
+| `01_fundamentos.ipynb` | Tipos de recomendadores, análisis exploratorio y **recomendador simple** con la media ponderada de IMDB (top 15). |
+| `02_content_based.ipynb` | **Basado en contenido**: TF-IDF sobre sinopsis, similitud coseno y "metadata soup". |
+| `03_nlp_tecnicas.ipynb` | NLP: tokenización, stemming, lematización, Bag of Words vs TF-IDF, wordclouds, coseno vs euclidiana. |
+| `04_recomendador_mejorado.ipynb` | **Recomendador mejorado** con `credits.csv` (3 actores + director + keywords + géneros), `CountVectorizer`, comparación con el de sinopsis y filtro de popularidad. Usa *The Dark Knight Rises* y *The Godfather*. |
+| `utils.py` | Funciones compartidas por los notebooks 01-03. |
+| `data/` | `movies_metadata.csv`, `keywords.csv` y `credits.csv`. |
+| `output/` | Gráficas generadas por los notebooks. |
 
-## 📂 Estructura
+Los notebooks se entregan **ya ejecutados**, con sus resultados visibles.
 
-```
-sistema_recomendaciones/
-├── data/
-│   ├── movies_metadata.csv   # ~45K películas (título, sinopsis, géneros, ratings...)
-│   └── keywords.csv          # ~46K entradas de keywords por película
-├── output/                   # Gráficas y visualizaciones generadas
-├── utils.py                  # Funciones utilitarias compartidas
-├── 01_fundamentos.py         # Módulo 1: Fundamentos
-├── 02_content_based.py       # Módulo 2: Content-Based Filtering
-├── 03_nlp_tecnicas.py        # Módulo 3: Técnicas de NLP
-├── requirements.txt          # Dependencias
-└── README.md                 # Este archivo
-```
+## 🚀 Instalación y ejecución
 
-## 🚀 Instalación
+Probado con **Python 3.12** (Linux/WSL).
 
 ```bash
-# Clonar el repositorio
 git clone <url-del-repo>
 cd sistema_recomendaciones
-
-# Instalar dependencias
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 
-# Descargar datos de NLTK (necesario para el módulo 03)
+# Datos de NLTK (solo para 03_nlp_tecnicas.ipynb)
 python -c "import nltk; nltk.download('punkt_tab'); nltk.download('stopwords'); nltk.download('wordnet')"
+
+# Abrir los notebooks (VS Code, JupyterLab, etc.) en este orden: 01, 02, 03, 04
 ```
 
-## ▶️ Ejecución
-
-Cada módulo se ejecuta de forma independiente y genera salida en consola + gráficas en `output/`:
+Para ejecutar un notebook desde la terminal:
 
 ```bash
-# Módulo 1: Fundamentos y análisis exploratorio
-python 01_fundamentos.py
-
-# Módulo 2: Sistema basado en contenido
-python 02_content_based.py
-
-# Módulo 3: Técnicas de NLP
-python 03_nlp_tecnicas.py
+python -m jupyter nbconvert --to notebook --execute --inplace 04_recomendador_mejorado.ipynb
 ```
 
-## 📊 ¿Qué aprenderás?
+### Datos
 
-### Módulo 1 — Fundamentos
-- Tipos de sistemas de recomendación (simple, content-based, colaborativo, híbrido)
-- Fórmula de Weighted Rating (promedio bayesiano de IMDB)
-- Análisis exploratorio con matplotlib
+Los tres CSV deben estar en `data/`. `credits.csv` (~79 MB) no viene en el material del tema, pero sí en el dataset original de Kaggle **"The Movies Dataset"** (Rounak Banik). Sin él no se puede ejecutar el notebook 04.
 
-### Módulo 2 — Content-Based Filtering
-- **TF-IDF**: Cómo convertir texto en vectores numéricos ponderados
-- **Similitud Coseno**: Medir la similitud entre documentos
-- **Metadata Soup**: Combinar múltiples fuentes de texto para mejores recomendaciones
-- Comparación TF-IDF vs CountVectorizer
+### ⚠️ Memoria RAM
 
-### Módulo 3 — NLP
-- Pipeline de preprocesamiento: tokenización → stopwords → stemming → lematización
-- Bag of Words vs TF-IDF: diferencias teóricas y prácticas
-- Extracción de n-gramas y keywords por género
-- Nubes de palabras (wordclouds)
-- Similitud coseno vs distancia euclidiana
+- `04_recomendador_mejorado.ipynb` calcula la similitud solo de la película consultada, por lo que usa poca memoria.
+- `02_content_based.ipynb` calcula las **matrices completas** de similitud (45,000 × 45,000, varios GB cada una) y puede necesitar **más de 25 GB de RAM**. Ejecútalo en un equipo con memoria suficiente.
+
+## 📊 Qué se aprende
+
+- **Recomendador simple:** media ponderada de IMDB, `WR = v/(v+m)·R + m/(v+m)·C`, con `m` = percentil 90 de votos.
+- **Basado en contenido:** vectorizar texto (TF-IDF o conteo) y comparar películas con la similitud coseno.
+- **Metadata soup:** unir actores, director, keywords y géneros (en minúsculas y sin espacios) para capturar más información que la sinopsis.
+- **NLP:** pipeline de preprocesamiento y comparación de representaciones vectoriales.
 
 ## 🛠️ Tecnologías
 
-- **Python 3.10+**
-- **pandas** — Manipulación de datos
-- **scikit-learn** — Vectorización (TF-IDF, CountVectorizer) y métricas de similitud
-- **NLTK** — Tokenización, stemming, lematización, stopwords
-- **matplotlib** — Visualizaciones
-- **wordcloud** — Nubes de palabras
+pandas · NumPy · scikit-learn · NLTK · matplotlib · wordcloud · Jupyter
 
 ## 📄 Licencia
 
