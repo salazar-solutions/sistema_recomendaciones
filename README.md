@@ -41,7 +41,7 @@ python -m jupyter nbconvert --to notebook --execute --inplace 04_recomendador_me
 
 ### Datos
 
-Los tres CSV deben estar en `data/`. `credits.csv` (~79 MB) no viene en el material del tema, pero sí en el dataset original de Kaggle **"The Movies Dataset"** (Rounak Banik). Sin él no se puede ejecutar el notebook 04.
+Los tres CSV deben estar en `data/`. `credits.csv` (~181 MB) **no está en este repositorio** (supera el límite de 100 MB de GitHub, por eso está en `.gitignore`) ni viene en el material del tema; descárgalo del dataset original de Kaggle **"The Movies Dataset"** (Rounak Banik). Sin él no se puede ejecutar el notebook 04.
 
 ### ⚠️ Memoria RAM
 
